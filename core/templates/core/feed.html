@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% for post in posts %}
+        <div class="bg-white rounded-xl shadow p-4 mb-4">
+            <div class="flex items-center justify-between mb-2">
+                <a href="{% url 'profile' post.author.username %}" class="font-semibold">
+                    {{ post.author.username }}
+                </a>
+                <span class="text-sm text-gray-500">{{ post.created_at|date:"M d, H:i" }}</span>
+            </div>
+
+            <p class="mb-2">{{ post.caption }}</p>
+
+            {% if post.image %}
+                <img src="{{ post.image.url }}" alt="post image" class="rounded-lg max-w-full">
+            {% endif %}
+
+            <div class="flex items-center gap-4 mt-4">
+                <button data-post-id="{{ post.id }}" class="like-btn text-gray-500">
+                    {% if post.liked_by_user %}
+                        ❤️ Liked
+                    {% else %}
+                        🤍 Like
+                    {% endif %}
+                </button>
+                <span class="likes-count">{{ post.likes.count }} likes</span>
+            </div>
+        </div>
+    {% endfor %}
+
+
+    <script>
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const postId = button.getAttribute('data-post-id');
+                fetch(`/like/${postId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.liked) {
+                            button.innerHTML = '❤️ Liked';
+                        } else {
+                            button.innerHTML = '🤍 Like';
+                        }
+
+                        button.nextElementSibling.innerHTML = `${data.likes_count} likes`;
+                    });
+            });
+        });
+    </script>
+{% endblock %}
+

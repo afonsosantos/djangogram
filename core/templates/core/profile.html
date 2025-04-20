@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="flex items-center gap-4 mb-6">
+        <img src="{{ profile_user.profile.avatar.url }}" class="w-16 h-16 rounded-full object-cover">
+        <div>
+            <h2 class="text-xl font-semibold">{{ profile_user.username }}</h2>
+            <p class="text-gray-600">{{ profile_user.profile.bio }}</p>
+        </div>
+    </div>
+
+    <!-- Add an "Edit Profile" button if the profile belongs to the current user -->
+    {% if profile_user == user %}
+        <div class="text-right mb-4">
+            <a href="{% url 'edit_profile' user.username %}"
+               class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                Edit Profile
+            </a>
+        </div>
+    {% endif %}
+
+    <h3 class="text-lg font-semibold mb-4">Posts</h3>
+
+    {% for post in posts %}
+        <div class="bg-white rounded-xl shadow p-4 mb-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm text-gray-500">{{ post.created_at|date:"M d, H:i" }}</span>
+            </div>
+            <p class="mb-2">{{ post.caption }}</p>
+            {% if post.image %}
+                <img src="{{ post.image.url }}" class="rounded-lg max-w-full">
+            {% endif %}
+        </div>
+    {% empty %}
+        <p class="text-gray-500">No posts yet.</p>
+    {% endfor %}
+{% endblock %}
